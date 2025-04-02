@@ -1,21 +1,19 @@
 import { createServer } from "node:http";
-import { parseRequest, addNewRoute, notFound } from "./route.ts";
+import { parseRequest, addNewRoute } from "./route.ts";
 
-const instance = createServer((req, res) => {
-  const { handler } = parseRequest(req);
-  
-  let response;
+const instance = createServer(async (req, res) => {
+  try {
+    const { handler } = await parseRequest(req, res);
 
-  if (handler) {
-    response = handler(req, res);
-    res.setHeader("Content-Type", "application/json");
-    res.statusCode = 200;
-  } else {
-    response = notFound(res);
+    if (handler) {
+      const response = await handler();
+      res.write(JSON.stringify(response));
+    }
+  } catch (error) {
+    console.error(error);
+  } finally {
+    res.end();
   }
-
-  res.write(response);
-  res.end();
 });
 
 export function Server() {
