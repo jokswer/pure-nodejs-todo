@@ -1,9 +1,17 @@
 import { Server } from "../libs/server.ts";
 
+import TasksController from "./controllers/tasks.controller.ts";
+import TasksRepository from "./repository/tasks.repository.ts";
+
+const repository = new TasksRepository();
+const controller = new TasksController(repository);
+
 const server = Server();
 
-server.post("/api/tasks", () => {
-  return "";
+server.post("/api/tasks", (req) => {
+  const { body } = req;
+  const result = controller.createTask(body);
+  return result;
 });
 
 server.get("/api/tasks", () => {
