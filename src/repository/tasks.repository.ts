@@ -11,7 +11,7 @@ export type Task = {
 
 class TasksRepository {
   private tasks: Task[] = [];
-  private queue = new Queue();
+  private writeQueue = new Queue();
 
   constructor() {
     this.initStorage();
@@ -33,7 +33,7 @@ class TasksRepository {
 
   public async createTask(data: Omit<Task, "id">) {
     return new Promise<Task>((resolve, reject) => {
-      this.queue.pushTask(async () => {
+      this.writeQueue.pushTask(async () => {
         const newTask = { ...data, id: this.findNextId() };
         const result = await writeStorage(this.tasks.concat(newTask));
 
@@ -50,7 +50,15 @@ class TasksRepository {
   public editTask() {}
   public deleteTask() {}
   public getTaskById() {}
-  public getAllTasks() {}
+  public async getAllTasks() {
+    const tasks = await readStorage<Task[]>();
+
+    if (!tasks) {
+      throw new Error("Something went wrong");
+    }
+
+    return tasks;
+  }
 }
 
 export default TasksRepository;

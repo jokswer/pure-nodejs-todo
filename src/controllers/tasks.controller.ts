@@ -35,7 +35,16 @@ class TasksController {
   public editTask() {}
   public deleteTask() {}
   public getTaskById() {}
-  public getAllTasks() {}
+  public async getAllTasks(res) {
+    try {
+      const result = await this.repository.getAllTasks();
+      res.writeHead(200, { "Content-Type": "application/json" });
+      return result;
+    } catch (error) {
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      return error.message;
+    }
+  }
 }
 
 export default TasksController;

@@ -13,8 +13,9 @@ server.post("/api/tasks", async (req, res) => {
   return result;
 });
 
-server.get("/api/tasks", () => {
-  return "";
+server.get("/api/tasks", async (_, res) => {
+  const result = await controller.getAllTasks(res);
+  return result;
 });
 
 server.get("/api/tasks/:id", () => {
