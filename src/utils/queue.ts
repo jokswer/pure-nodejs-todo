@@ -13,6 +13,7 @@ class Queue {
         this.running--;
         this.next();
       });
+      this.running++;
     }
   }
 

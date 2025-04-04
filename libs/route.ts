@@ -33,8 +33,7 @@ async function readBody(request: IncomingMessage): Promise<unknown> {
 }
 
 function notFound(response: ServerResponse<IncomingMessage>) {
-  response.statusCode = 404;
-  response.setHeader("Content-Type", "text/plain");
+  response.writeHead(404, { "Content-Type": "text/plain" });
   return "Not found";
 }
 
@@ -49,10 +48,6 @@ export async function parseRequest(
 
     if (method && url && routes[method] && routes[method][url]) {
       const handler = routes[method][url];
-
-      response.setHeader("Content-Type", "application/json");
-      response.statusCode = 200;
-
       return {
         handler: () => handler(Object.assign(request, { body }), response),
       };

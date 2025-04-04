@@ -8,9 +8,8 @@ const controller = new TasksController(repository);
 
 const server = Server();
 
-server.post("/api/tasks", (req) => {
-  const { body } = req;
-  const result = controller.createTask(body);
+server.post("/api/tasks", async (req, res) => {
+  const result = await controller.createTask(req, res);
   return result;
 });
 

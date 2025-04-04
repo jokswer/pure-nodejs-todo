@@ -27,15 +27,24 @@ class TasksRepository {
 
   private findNextId() {
     const sortedTasks = this.tasks.slice().sort((a, b) => a.id - b.id);
-    const lastTaskId = sortedTasks[sortedTasks.length - 1]?.id ?? 0;
+    const lastTaskId = sortedTasks.at(-1)?.id ?? 0;
     return lastTaskId + 1;
   }
 
-  public createTask(data: Omit<Task, "id">) {
-    const newTask = { ...data, id: this.findNextId() };
-    this.tasks.push(newTask);
-    this.queue.pushTask(() => writeStorage(this.tasks));
-    console.log(newTask);
+  public async createTask(data: Omit<Task, "id">) {
+    return new Promise<Task>((resolve, reject) => {
+      this.queue.pushTask(async () => {
+        const newTask = { ...data, id: this.findNextId() };
+        const result = await writeStorage(this.tasks.concat(newTask));
+
+        if (result.status === "success") {
+          this.tasks.push(newTask);
+          resolve(newTask);
+        } else {
+          reject("Something went wrong");
+        }
+      });
+    });
   }
 
   public editTask() {}
