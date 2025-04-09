@@ -33,7 +33,31 @@ class TasksController {
     }
   }
   public editTask() {}
-  public deleteTask() {}
+
+  public async deleteTask(req, res) {
+    try {
+      const { id } = req.params;
+      const parsedId = parseInt(id, 10);
+
+      if (isNaN(parsedId)) {
+        res.writeHead(400, { "Content-Type": "text/plain" });
+        return "Invalid id";
+      }
+
+      const result = await this.repository.deleteTask(parsedId);
+      res.writeHead(200, { "Content-Type": "application/json" });
+
+      return result;
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        res.writeHead(404, { "Content-Type": "text/plain" });
+        return error.message;
+      }
+
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      return error;
+    }
+  }
 
   public async getTaskById(req, res) {
     try {

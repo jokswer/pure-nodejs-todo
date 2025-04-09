@@ -49,7 +49,43 @@ class TasksRepository {
   }
 
   public editTask() {}
-  public deleteTask() {}
+
+  public deleteTask(id: number) {
+    return new Promise<Task>((resolve, reject) => {
+      this.writeQueue.pushTask(async () => {
+        try {
+          const tasks = await readStorage<Task[]>();
+
+          if (!tasks) {
+            throw new Error("Something went wrong");
+          }
+
+          const task = tasks.find((task) => task.id === id);
+
+          if (!task) {
+            throw new NotFoundError("Task not found");
+          }
+
+          const updatedTasks = tasks.filter((task) => task.id !== id);
+          const result = await writeStorage(updatedTasks);
+
+          if (result.status === "success") {
+            this.tasks = updatedTasks;
+            resolve(task);
+          } else {
+            reject("Something went wrong");
+          }
+        } catch (error) {
+          if (error instanceof NotFoundError) {
+            reject(error);
+          } else {
+            reject("Something went wrong");
+          }
+        }
+      });
+    });
+  }
+
   public async getTaskById(id: number) {
     const tasks = await readStorage<Task[]>();
 

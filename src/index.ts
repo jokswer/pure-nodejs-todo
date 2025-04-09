@@ -27,8 +27,9 @@ server.put("/api/tasks/:id", () => {
   return "";
 });
 
-server.delete("/api/tasks/:id", () => {
-  return "";
+server.delete("/api/tasks/:id", async (req, res) => {
+  const result = await controller.deleteTask(req, res);
+  return result;
 });
 
 server.listen(3000);
