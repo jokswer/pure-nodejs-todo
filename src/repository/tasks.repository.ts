@@ -1,3 +1,4 @@
+import { NotFoundError } from "../utils/error.ts";
 import Queue from "../utils/queue.ts";
 import { readStorage, writeStorage } from "../utils/storage.ts";
 
@@ -49,7 +50,21 @@ class TasksRepository {
 
   public editTask() {}
   public deleteTask() {}
-  public getTaskById() {}
+  public async getTaskById(id: number) {
+    const tasks = await readStorage<Task[]>();
+
+    if (!tasks) {
+      throw new Error("Something went wrong");
+    }
+
+    const task = tasks.find((task) => task.id === id);
+
+    if (!task) {
+      throw new NotFoundError("Task not found");
+    }
+
+    return task;
+  }
   public async getAllTasks() {
     const tasks = await readStorage<Task[]>();
 

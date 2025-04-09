@@ -18,8 +18,9 @@ server.get("/api/tasks", async (_, res) => {
   return result;
 });
 
-server.get("/api/tasks/:id", () => {
-  return "";
+server.get("/api/tasks/:id", async (req, res) => {
+  const result = await controller.getTaskById(req, res);
+  return result;
 });
 
 server.put("/api/tasks/:id", () => {
