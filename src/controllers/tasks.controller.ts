@@ -32,7 +32,42 @@ class TasksController {
       return error;
     }
   }
-  public editTask() {}
+
+  public async editTask(req, res) {
+    try {
+      const { params, body } = req;
+      const parsedId = parseInt(params.id, 10);
+
+      if (isNaN(parsedId)) {
+        res.writeHead(400, { "Content-Type": "text/plain" });
+        return "Invalid id";
+      }
+
+      const validationError = validateCreateTasksBody(body);
+
+      if (validationError) {
+        throw new ValidationError(validationError);
+      }
+
+      const result = await this.repository.editTask(parsedId, body);
+      res.writeHead(200, { "Content-Type": "application/json" });
+
+      return result;
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        res.writeHead(404, { "Content-Type": "text/plain" });
+        return error.message;
+      }
+
+      if (error instanceof ValidationError) {
+        res.writeHead(400, { "Content-Type": "text/plain" });
+        return error.message;
+      }
+
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      return error;
+    }
+  }
 
   public async deleteTask(req, res) {
     try {

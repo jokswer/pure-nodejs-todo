@@ -23,8 +23,9 @@ server.get("/api/tasks/:id", async (req, res) => {
   return result;
 });
 
-server.put("/api/tasks/:id", () => {
-  return "";
+server.put("/api/tasks/:id", async (req, res) => {
+  const result = await controller.editTask(req, res)
+  return result;
 });
 
 server.delete("/api/tasks/:id", async (req, res) => {

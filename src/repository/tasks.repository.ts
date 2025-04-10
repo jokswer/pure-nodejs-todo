@@ -48,7 +48,41 @@ class TasksRepository {
     });
   }
 
-  public editTask() {}
+  public async editTask(id: number, data: Omit<Task, "id">) {
+    return new Promise<Task>((resolve, reject) => {
+      this.writeQueue.pushTask(async () => {
+        try {
+          const tasks = await readStorage<Task[]>();
+
+          if (!tasks) {
+            throw new Error("Something went wrong");
+          }
+
+          const taskIndex = tasks.findIndex((task) => task.id === id);
+
+          if (taskIndex === -1) {
+            throw new NotFoundError("Task not found");
+          }
+
+          tasks[taskIndex] = { ...tasks[taskIndex], ...data };
+
+          const result = await writeStorage(tasks);
+
+          if (result.status === "success") {
+            resolve(tasks[taskIndex]);
+          } else {
+            reject("Something went wrong");
+          }
+        } catch (error) {
+          if (error instanceof NotFoundError) {
+            reject(error);
+          } else {
+            reject("Something went wrong");
+          }
+        }
+      });
+    });
+  }
 
   public deleteTask(id: number) {
     return new Promise<Task>((resolve, reject) => {
