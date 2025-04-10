@@ -1,4 +1,4 @@
-# Task Manager API
+# Pure Node.js TODO application
 
 A simple backend application for managing tasks built with **Node.js** and **TypeScript**, without using any external libraries or frameworks.
 
