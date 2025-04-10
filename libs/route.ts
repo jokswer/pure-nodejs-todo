@@ -1,14 +1,37 @@
 import { IncomingMessage, ServerResponse } from "node:http";
 import URL from "node:url";
 
-const routes = {
+export type TServerResponse = ServerResponse;
+
+export type TIncomingMessage = IncomingMessage & {
+  body: Record<string, unknown>;
+  params: Record<string, string>;
+};
+
+export type THandler<T> = (
+  request: TIncomingMessage,
+  response: TServerResponse
+) => Promise<T> | T;
+
+export type TAddNewRouteArgs = {
+  method: string;
+  url: string;
+  handler: THandler<unknown>;
+};
+
+export type TRoutes = Record<
+  "GET" | "POST" | "PUT" | "DELETE",
+  Record<string, THandler<unknown>>
+>;
+
+const routes: TRoutes = {
   GET: {},
   POST: {},
   PUT: {},
   DELETE: {},
 };
 
-export function addNewRoute({ method, url, handler }) {
+export function addNewRoute({ method, url, handler }: TAddNewRouteArgs) {
   if (routes[method][url]) {
     console.error(`Route ${method} ${url} already exist`);
     return;

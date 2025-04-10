@@ -1,6 +1,6 @@
-import { createServer } from "node:http";
+import { createServer} from "node:http";
 
-import { parseRequest, addNewRoute } from "./route.ts";
+import { parseRequest, addNewRoute, type THandler } from "./route.ts";
 
 const instance = createServer(async (req, res) => {
   try {
@@ -19,16 +19,16 @@ const instance = createServer(async (req, res) => {
 
 export function Server() {
   const server = {
-    get: function _get(url: string, handler) {
+    get: function _get<T>(url: string, handler: THandler<T>) {
       return addNewRoute({ method: "GET", url, handler });
     },
-    post: function _post(url: string, handler) {
+    post: function _post<T>(url: string, handler: THandler<T>) {
       return addNewRoute({ method: "POST", url, handler });
     },
-    put: function _put(url: string, handler) {
+    put: function _put<T>(url: string, handler: THandler<T>) {
       return addNewRoute({ method: "PUT", url, handler });
     },
-    delete: function _delete(url: string, handler) {
+    delete: function _delete<T>(url: string, handler: THandler<T>) {
       return addNewRoute({ method: "DELETE", url, handler });
     },
     listen: function _listen(port: number) {

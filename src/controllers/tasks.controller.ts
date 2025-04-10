@@ -1,3 +1,5 @@
+import type { TIncomingMessage, TServerResponse } from "../../libs/route.ts";
+
 import TasksRepository, { type Task } from "../repository/tasks.repository.ts";
 import { validateCreateTasksBody } from "../validation/request.validation.ts";
 import { NotFoundError, ValidationError } from "../utils/error.ts";
@@ -9,7 +11,10 @@ class TasksController {
     this.repository = repository;
   }
 
-  public async createTask(req, res): Promise<Task | string> {
+  public async createTask(
+    req: TIncomingMessage,
+    res: TServerResponse
+  ): Promise<Task | string> {
     try {
       const { body } = req;
 
@@ -19,7 +24,7 @@ class TasksController {
         throw new ValidationError(validationError);
       }
 
-      const result = await this.repository.createTask(body);
+      const result = await this.repository.createTask(body as Omit<Task, "id">);
       res.writeHead(200, { "Content-Type": "application/json" });
 
       return result;
@@ -33,7 +38,7 @@ class TasksController {
     }
   }
 
-  public async editTask(req, res) {
+  public async editTask(req: TIncomingMessage, res: TServerResponse) {
     try {
       const { params, body } = req;
       const parsedId = parseInt(params.id, 10);
@@ -49,7 +54,10 @@ class TasksController {
         throw new ValidationError(validationError);
       }
 
-      const result = await this.repository.editTask(parsedId, body);
+      const result = await this.repository.editTask(
+        parsedId,
+        body as Omit<Task, "id">
+      );
       res.writeHead(200, { "Content-Type": "application/json" });
 
       return result;
@@ -69,7 +77,7 @@ class TasksController {
     }
   }
 
-  public async deleteTask(req, res) {
+  public async deleteTask(req: TIncomingMessage, res: TServerResponse) {
     try {
       const { id } = req.params;
       const parsedId = parseInt(id, 10);
@@ -94,7 +102,7 @@ class TasksController {
     }
   }
 
-  public async getTaskById(req, res) {
+  public async getTaskById(req: TIncomingMessage, res: TServerResponse) {
     try {
       const { id } = req.params;
       const parsedId = parseInt(id, 10);
@@ -119,7 +127,7 @@ class TasksController {
     }
   }
 
-  public async getAllTasks(res) {
+  public async getAllTasks(res: TServerResponse) {
     try {
       const result = await this.repository.getAllTasks();
       res.writeHead(200, { "Content-Type": "application/json" });

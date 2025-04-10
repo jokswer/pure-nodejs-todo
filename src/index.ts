@@ -24,7 +24,7 @@ server.get("/api/tasks/:id", async (req, res) => {
 });
 
 server.put("/api/tasks/:id", async (req, res) => {
-  const result = await controller.editTask(req, res)
+  const result = await controller.editTask(req, res);
   return result;
 });
 
