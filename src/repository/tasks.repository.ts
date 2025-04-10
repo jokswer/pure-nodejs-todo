@@ -12,6 +12,7 @@ export type Task = {
 
 class TasksRepository {
   private tasks: Task[] = [];
+  private maxTaskId = 0;
   private writeQueue = new Queue();
 
   constructor() {
@@ -24,18 +25,21 @@ class TasksRepository {
     if (storage) {
       this.tasks = storage;
     }
-  }
 
-  private findNextId() {
     const sortedTasks = this.tasks.slice().sort((a, b) => a.id - b.id);
     const lastTaskId = sortedTasks.at(-1)?.id ?? 0;
-    return lastTaskId + 1;
+
+    this.maxTaskId = lastTaskId;
+  }
+
+  private setNextMaxId() {
+    return ++this.maxTaskId;
   }
 
   public async createTask(data: Omit<Task, "id">) {
     return new Promise<Task>((resolve, reject) => {
       this.writeQueue.pushTask(async () => {
-        const newTask = { ...data, id: this.findNextId() };
+        const newTask = { ...data, id: this.setNextMaxId() };
         const result = await writeStorage(this.tasks.concat(newTask));
 
         if (result.status === "success") {
